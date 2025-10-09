@@ -868,12 +868,21 @@ class ConfigWidget(QWidget):
         
         # 3. Edge驱动检查
         check_result.append("3. Edge驱动检查:")
-        driver_path = os.path.join(os.path.dirname(__file__), "msedgedriver.exe")
+
+        if getattr(sys, 'frozen', False):
+            # 打包后：获取.exe所在目录
+            base_dir = os.path.dirname(sys.executable)
+        else:
+            # 未打包：使用原逻辑（脚本所在目录）
+            base_dir = os.path.dirname(__file__)
+        driver_path = os.path.join(base_dir, "msedgedriver.exe")
+
+        check_result.append(driver_path)
         if not os.path.exists(driver_path):
             check_result.append(f"   [警告] 未在当前目录找到驱动: {os.path.basename(driver_path)}")
             check_result.append("   [建议] 下载地址: https://developer.microsoft.com/zh-cn/microsoft-edge/tools/webdriver/")
         else:
-            check_result.append(f"   [通过] 驱动文件存在: {os.path.basename(driver_path)}")
+            check_result.append(f"   [通过] 驱动文件存在: {driver_path}")
         check_result.append("")
         
         # 4. 浏览器与驱动兼容性检查
