@@ -20,7 +20,15 @@ def init_browser():
     try:
         # 驱动路径（当前目录下的msedgedriver.exe）
         driver_filename = "msedgedriver.exe"
-        driver_path = os.path.join(os.path.dirname(__file__), driver_filename)
+
+        if getattr(sys, 'frozen', False):
+            # 打包后：获取.exe所在目录
+            base_dir = os.path.dirname(sys.executable)
+        else:
+            # 未打包：使用原逻辑（脚本所在目录）
+            base_dir = os.path.dirname(__file__)
+        
+        driver_path = os.path.join(base_dir, driver_filename)
         
         if not os.path.exists(driver_path):
             utils.log(f"[错误] 未找到驱动文件: {driver_path}")
@@ -83,7 +91,15 @@ def check_edge_compatibility():
             return True
             
         # 检查驱动是否存在
-        driver_path = os.path.join(os.path.dirname(__file__), "msedgedriver.exe")
+        # 判断是否为打包后的环境（_MEIPASS是pyinstaller的临时目录标识）
+        if getattr(sys, 'frozen', False):
+            # 打包后：获取.exe所在目录
+            base_dir = os.path.dirname(sys.executable)
+        else:
+            # 未打包：使用原逻辑（脚本所在目录）
+            base_dir = os.path.dirname(__file__)
+        
+        driver_path = os.path.join(base_dir, "msedgedriver.exe")
         if not os.path.exists(driver_path):
             utils.log(f"未找到驱动文件: {driver_path}（请下载对应版本驱动）")
             return False
