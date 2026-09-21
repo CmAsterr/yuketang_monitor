@@ -1,0 +1,26 @@
+# Local credentials and runtime data
+/config.toml
+/data/
+*.db
+*.db-wal
+*.db-shm
+*.log
+.env
+.env.*
+# Local archives, reports and private materials
+/archive/
+/artifacts/
+/qa/
+/local-test-materials/
+*.lnk
+# Build and interpreter outputs
+/build/
+/dist/
+*.egg-info/
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/

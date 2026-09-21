@@ -1,0 +1,36 @@
+# Copy to config.toml or save settings from the local dashboard.
+# No credentials are included. Keep your real config.toml private.
+domain = "changjiang.yuketang.cn"
+scan_interval = 30.0
+course_filter = []
+
+[ai]
+enabled = true
+base_url = "https://api.deepseek.com"
+model = "deepseek-flash"
+api_key = ""
+max_tokens = 4096
+timeout = 60.0
+image_detail = "high"
+
+[qq]
+enabled = false
+app_id = ""
+secret = ""
+
+[[channels]]
+kind = "wecom"
+enabled = false
+webhook_url = ""
+
+[[channels]]
+kind = "dingtalk"
+enabled = false
+webhook_url = ""
+secret = ""
+
+[[channels]]
+kind = "feishu"
+enabled = false
+webhook_url = ""
+secret = ""
