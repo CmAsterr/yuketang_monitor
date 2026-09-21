@@ -1,0 +1,12 @@
+include LICENSE README.md CHANGELOG.md THIRD_PARTY_NOTICES.md AGENTS.md config.example.toml requirements.txt constraints-tested.txt
+recursive-include docs *.md
+recursive-include tools *.py *.pyw *.ps1
+recursive-include src/yktmon/static *.js *.css *.html
+prune data
+prune qa
+prune archive
+prune artifacts
+prune local-test-materials
+prune .venv
+exclude config.toml
+global-exclude *.py[cod] *.db *.db-wal *.db-shm *.log *.lnk *.exe *.pptx *.reg

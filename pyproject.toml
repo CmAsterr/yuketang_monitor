@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "yktmon"
+version = "5.0.0"
+description = "雨课堂 WebSocket 课堂习题看板"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Operating System :: Microsoft :: Windows",
+    "Topic :: Education",
+]
+requires-python = ">=3.11"
+dependencies = ["httpx>=0.28,<1", "websockets>=15,<16", "fastapi>=0.115,<1", "uvicorn>=0.34,<1", "pydantic>=2.10,<3", "tomlkit>=0.13,<1", "qrcode>=8,<9", "pillow>=11,<13", "json-repair>=0.50,<1", "markdown-it-py>=3,<5", "latex2mathml>=3.77,<4"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<10", "pytest-asyncio>=1,<2", "playwright>=1.50,<2", "ruff>=0.9,<1"]
+
+[project.urls]
+Repository = "https://github.com/CmAsterr/yuketang_monitor"
+Issues = "https://github.com/CmAsterr/yuketang_monitor/issues"
+
+[project.scripts]
+yktmon = "yktmon.__main__:main"
+
+[project.gui-scripts]
+yktmon-desktop = "yktmon.desktop:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+yktmon = ["static/*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

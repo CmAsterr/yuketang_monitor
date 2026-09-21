@@ -1,0 +1,51 @@
+name: Publish v5 release
+on:
+  push:
+    branches: [main]
+    paths:
+      - pyproject.toml
+      - .github/workflows/release.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: publish-v5
+  cancel-in-progress: false
+jobs:
+  release:
+    if: github.ref == 'refs/heads/main'
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install tested dependencies
+        run: python -m pip install -c constraints-tested.txt -e ".[dev]" build
+      - name: Validate final release source
+        run: |
+          python -m pytest -q
+          python -m ruff check src tests tools --select E4,E7,E9,F
+      - name: Build source and wheel
+        run: python -m build
+      - name: Publish immutable version and checksums
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $version = python -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])"
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot read version' }
+          $tag = "v$version"
+          gh release view $tag --repo $env:GITHUB_REPOSITORY *> $null
+          if ($LASTEXITCODE -eq 0) { throw 'Release already exists; refusing to replace published assets' }
+          $zip = "dist/yktmon-$version-source.zip"
+          git archive --format=zip --prefix="yktmon-$version/" -o $zip HEAD
+          if ($LASTEXITCODE -ne 0) { throw 'Source archive failed' }
+          $files = Get-ChildItem -LiteralPath dist -File | Where-Object { $_.Name -match '\.(zip|whl|tar\.gz)$' } | Sort-Object Name
+          $lines = @($files | ForEach-Object { ((Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLower() + '  ' + $_.Name) })
+          [IO.File]::WriteAllLines((Join-Path (Resolve-Path dist) 'SHA256SUMS.txt'), $lines, [Text.UTF8Encoding]::new($false))
+          $assets = @($files.FullName) + @((Resolve-Path 'dist/SHA256SUMS.txt').Path)
+          gh release create $tag @assets --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title "雨课堂习题看板 $tag" --notes-file docs/RELEASE_NOTES.md --latest
+          if ($LASTEXITCODE -ne 0) { throw 'Release publishing failed' }
